@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_report_academic_application" model="ir.actions.report">
+        <field name="name">Academic Application</field>
+        <field name="model">academic.application</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">academic_admission_enrollment.report_academic_application_document</field>
+        <field name="report_file">academic_admission_enrollment.report_academic_application_document</field>
+        <field name="binding_model_id" ref="model_academic_application"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Solicitud - %s' % (object.name)</field>
+    </record>
+
+    <template id="report_academic_application_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Solicitud Académica <span t-field="o.name"/></h2>
+                        <div class="row mt32 mb32">
+                            <div class="col-6"><strong>Aspirante:</strong> <span t-field="o.applicant_name"/><br/><strong>Identificación:</strong> <span t-field="o.identification"/><br/><strong>Correo:</strong> <span t-field="o.email"/><br/><strong>Teléfono:</strong> <span t-field="o.phone"/></div>
+                            <div class="col-6"><strong>Oferta:</strong> <span t-field="o.offering_id"/><br/><strong>Estado:</strong> <span t-field="o.state"/><br/><strong>Fecha:</strong> <span t-field="o.create_date"/></div>
+                        </div>
+                        <h4>Dirección</h4>
+                        <p><span t-field="o.state_id"/>, <span t-field="o.canton"/>, <span t-field="o.district"/> — <span t-field="o.street"/></p>
+                        <h4>Documentos</h4>
+                        <table class="table table-sm"><thead><tr><th>Tipo</th><th>Archivo</th><th>Estado</th><th>Vigencia</th></tr></thead><tbody><tr t-foreach="o.document_ids" t-as="d"><td><span t-field="d.document_type_id"/></td><td><span t-field="d.filename"/></td><td><span t-field="d.state"/></td><td><span t-field="d.expiry_date"/></td></tr></tbody></table>
+                        <t t-if="o.guarantor_ids"><h4>Fiador / Responsable</h4><table class="table table-sm"><thead><tr><th>Nombre</th><th>Relación</th><th>Identificación</th><th>Estado</th></tr></thead><tbody><tr t-foreach="o.guarantor_ids" t-as="g"><td><span t-field="g.partner_id"/></td><td><span t-field="g.relationship"/></td><td><span t-field="g.identification"/></td><td><span t-field="g.state"/></td></tr></tbody></table></t>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

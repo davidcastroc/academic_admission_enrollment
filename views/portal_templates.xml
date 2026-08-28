@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_academic" inherit_id="portal.portal_my_home" priority="30">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Admisión y matrícula</t>
+                <t t-set="url" t-value="'/my/admissions'"/>
+                <t t-set="text">Consulta y completa tus solicitudes académicas.</t>
+                <t t-set="placeholder_count" t-value="'admission_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_applications" name="My Academic Applications">
+        <t t-call="portal.portal_layout">
+            <div class="container py-4 o_academic_portal">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Mis solicitudes académicas</h2>
+                    <a href="/academic/apply" class="btn btn-primary">Nueva solicitud</a>
+                </div>
+                <t t-if="not applications"><div class="alert alert-info">Aún no tienes solicitudes.</div></t>
+                <div class="row g-3">
+                    <t t-foreach="applications" t-as="app">
+                        <div class="col-12 col-lg-6"><div class="card shadow-sm h-100"><div class="card-body">
+                            <h5 class="card-title"><t t-out="app.name"/></h5>
+                            <p class="mb-1"><strong>Oferta:</strong> <t t-out="app.offering_id.display_name"/></p>
+                            <p class="mb-3"><strong>Estado:</strong> <span class="academic-status"><t t-out="dict(app._fields['state'].selection).get(app.state)"/></span></p>
+                            <a t-att-href="'/my/admissions/%s' % app.id" class="btn btn-outline-primary">Ver solicitud</a>
+                        </div></div></div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_application_form" name="Academic Application Form">
+        <t t-call="portal.portal_layout">
+            <div class="container py-4 o_academic_portal">
+                <h2>Nueva solicitud académica</h2>
+                <p class="text-muted">Completa todos los campos. Luego podrás adjuntar la documentación requerida antes de enviar la solicitud.</p>
+                <t t-if="error"><div class="alert alert-danger"><t t-out="error"/></div></t>
+                <form action="/academic/apply/submit" method="post" class="card shadow-sm p-4">
+                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                    <div class="row g-3">
+                        <div class="col-md-6"><label class="form-label">Oferta académica *</label><select name="offering_id" class="form-select" required="required"><option value="">Seleccione...</option><t t-foreach="offerings" t-as="off"><option t-att-value="off.id"><t t-out="off.display_name"/></option></t></select></div>
+                        <div class="col-md-6"><label class="form-label">Nombre completo *</label><input name="applicant_name" class="form-control" required="required" t-att-value="partner.name or ''"/></div>
+                        <div class="col-md-3"><label class="form-label">Tipo identificación *</label><select name="identification_type" class="form-select" required="required"><option value="national">Cédula</option><option value="dimex">DIMEX</option><option value="passport">Pasaporte</option><option value="other">Otro</option></select></div>
+                        <div class="col-md-3"><label class="form-label">Identificación *</label><input name="identification" class="form-control" required="required" t-att-value="partner.academic_identification or ''"/></div>
+                        <div class="col-md-3"><label class="form-label">Fecha nacimiento *</label><input name="birth_date" type="date" class="form-control" required="required"/></div>
+                        <div class="col-md-3"><label class="form-label">Teléfono *</label><input name="phone" class="form-control" required="required" t-att-value="partner.phone or partner.mobile or ''"/></div>
+                        <div class="col-md-6"><label class="form-label">Correo *</label><input name="email" type="email" class="form-control" required="required" t-att-value="partner.email or ''"/></div>
+                        <div class="col-md-6"><label class="form-label">País *</label><select name="country_id" class="form-select" required="required"><option value="">Seleccione...</option><t t-foreach="countries" t-as="country"><option t-att-value="country.id" t-att-selected="partner.country_id.id == country.id"><t t-out="country.name"/></option></t></select></div>
+                        <div class="col-md-4"><label class="form-label">Provincia/Estado *</label><select name="state_id" class="form-select" required="required"><option value="">Seleccione...</option><t t-foreach="states" t-as="state"><option t-att-value="state.id" t-att-selected="partner.state_id.id == state.id"><t t-out="state.name"/> - <t t-out="state.country_id.code"/></option></t></select></div>
+                        <div class="col-md-4"><label class="form-label">Cantón *</label><input name="canton" class="form-control" required="required" t-att-value="partner.academic_canton or ''"/></div>
+                        <div class="col-md-4"><label class="form-label">Distrito *</label><input name="district" class="form-control" required="required" t-att-value="partner.academic_district or ''"/></div>
+                        <div class="col-12"><label class="form-label">Dirección completa *</label><textarea name="street" class="form-control" required="required"><t t-out="partner.street or ''"/></textarea></div>
+                    </div>
+                    <div class="mt-4"><button type="submit" class="btn btn-primary">Crear borrador y continuar</button></div>
+                </form>
+            </div>
+        </t>
+    </template>
+
+    <template id="portal_application_detail" name="Academic Application Detail">
+        <t t-call="portal.portal_layout">
+            <div class="container py-4 o_academic_portal">
+                <div class="d-flex justify-content-between align-items-start mb-3"><div><h2><t t-out="application.name"/></h2><p class="text-muted mb-0"><t t-out="application.offering_id.display_name"/></p></div><a href="/my/admissions" class="btn btn-outline-secondary">Volver</a></div>
+                <t t-if="error"><div class="alert alert-danger"><t t-out="error"/></div></t>
+                <t t-if="application.state == 'correction'"><div class="alert alert-warning"><strong>Correcciones requeridas:</strong> <t t-out="application.correction_note"/></div></t>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3"><div class="card p-3"><small>Estado</small><strong><t t-out="dict(application._fields['state'].selection).get(application.state)"/></strong></div></div>
+                    <div class="col-md-3"><div class="card p-3"><small>Documentos faltantes</small><strong><t t-out="application.missing_required_documents"/></strong></div></div>
+                    <div class="col-md-3"><div class="card p-3"><small>Documentos observados</small><strong><t t-out="application.invalid_documents"/></strong></div></div>
+                    <div class="col-md-3"><div class="card p-3"><small>Identificación</small><strong><t t-out="application.identification"/></strong></div></div>
+                </div>
+                <t t-if="application.state in ['draft','correction']"><div class="card shadow-sm mb-4"><div class="card-body"><h5>Datos de la solicitud</h5><form t-att-action="'/my/admissions/%s/update' % application.id" method="post" class="row g-2"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><div class="col-md-6"><label class="form-label">Nombre completo</label><input name="applicant_name" class="form-control" required="required" t-att-value="application.applicant_name"/></div><div class="col-md-3"><label class="form-label">Tipo identificación</label><select name="identification_type" class="form-select" required="required"><option value="national" t-att-selected="application.identification_type == 'national'">Cédula</option><option value="dimex" t-att-selected="application.identification_type == 'dimex'">DIMEX</option><option value="passport" t-att-selected="application.identification_type == 'passport'">Pasaporte</option><option value="other" t-att-selected="application.identification_type == 'other'">Otro</option></select></div><div class="col-md-3"><label class="form-label">Identificación</label><input name="identification" class="form-control" required="required" t-att-value="application.identification"/></div><div class="col-md-3"><label class="form-label">Nacimiento</label><input name="birth_date" type="date" class="form-control" required="required" t-att-value="application.birth_date"/></div><div class="col-md-3"><label class="form-label">Teléfono</label><input name="phone" class="form-control" required="required" t-att-value="application.phone"/></div><div class="col-md-6"><label class="form-label">Correo</label><input name="email" type="email" class="form-control" required="required" t-att-value="application.email"/></div><div class="col-md-4"><label class="form-label">País</label><select name="country_id" class="form-select" required="required"><t t-foreach="countries" t-as="country"><option t-att-value="country.id" t-att-selected="application.country_id.id == country.id"><t t-out="country.name"/></option></t></select></div><div class="col-md-4"><label class="form-label">Provincia/Estado</label><select name="state_id" class="form-select" required="required"><t t-foreach="states" t-as="state"><option t-att-value="state.id" t-att-selected="application.state_id.id == state.id"><t t-out="state.name"/> - <t t-out="state.country_id.code"/></option></t></select></div><div class="col-md-4"><label class="form-label">Cantón</label><input name="canton" class="form-control" required="required" t-att-value="application.canton"/></div><div class="col-md-4"><label class="form-label">Distrito</label><input name="district" class="form-control" required="required" t-att-value="application.district"/></div><div class="col-md-8"><label class="form-label">Dirección completa</label><input name="street" class="form-control" required="required" t-att-value="application.street"/></div><div class="col-12"><button class="btn btn-outline-primary" type="submit">Guardar datos</button></div></form></div></div></t>
+                <div class="card shadow-sm mb-4"><div class="card-body"><h5>Documentación</h5>
+                    <t t-if="requirements"><div class="mb-3"><strong>Requisitos:</strong><ul><t t-foreach="requirements" t-as="req"><li><t t-out="req.document_type_id.name"/> <t t-if="req.required"><span class="badge text-bg-danger">Obligatorio</span></t></li></t></ul></div></t>
+                    <div class="table-responsive"><table class="table"><thead><tr><th>Tipo</th><th>Archivo</th><th>Estado</th><th>Observación</th></tr></thead><tbody><t t-foreach="application.document_ids" t-as="doc"><tr><td><t t-out="doc.document_type_id.name"/></td><td><t t-out="doc.filename"/></td><td><t t-out="dict(doc._fields['state'].selection).get(doc.state)"/></td><td><t t-out="doc.review_note or ''"/></td></tr></t></tbody></table></div>
+                    <t t-if="application.state in ['draft','correction']"><form t-att-action="'/my/admissions/%s/upload' % application.id" method="post" enctype="multipart/form-data" class="row g-2 align-items-end"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><div class="col-md-5"><label class="form-label">Tipo de documento</label><select name="document_type_id" class="form-select" required="required"><t t-foreach="document_types" t-as="dtype"><option t-att-value="dtype.id"><t t-out="dtype.name"/></option></t></select></div><div class="col-md-5"><label class="form-label">Archivo PDF/JPG/PNG</label><input type="file" name="document" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required="required"/></div><div class="col-md-2"><button type="submit" class="btn btn-outline-primary w-100">Cargar</button></div></form></t>
+                </div></div>
+                <t t-if="application.requires_guarantor"><div class="card shadow-sm mb-4"><div class="card-body"><h5>Fiador / responsable</h5><t t-if="application.guarantor_ids"><ul><t t-foreach="application.guarantor_ids" t-as="g"><li><t t-out="g.partner_id.name"/> — <t t-out="g.relationship"/> — <t t-out="dict(g._fields['state'].selection).get(g.state)"/></li></t></ul></t><t t-if="application.state in ['draft','correction'] and not application.guarantor_ids"><form t-att-action="'/my/admissions/%s/guarantor' % application.id" method="post" class="row g-2"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><div class="col-md-6"><input name="name" class="form-control" placeholder="Nombre completo" required="required"/></div><div class="col-md-6"><input name="relationship" class="form-control" placeholder="Relación" required="required"/></div><div class="col-md-4"><input name="identification" class="form-control" placeholder="Identificación" required="required"/></div><div class="col-md-4"><input name="phone" class="form-control" placeholder="Teléfono" required="required"/></div><div class="col-md-4"><input name="email" type="email" class="form-control" placeholder="Correo" required="required"/></div><div class="col-12"><button class="btn btn-outline-primary" type="submit">Registrar responsable</button></div></form></t></div></div></t>
+                <t t-if="application.state in ['approved','enrolled']"><div class="card shadow-sm mb-4"><div class="card-body"><h5>Convalidación</h5><t t-if="application.convalidation_ids"><ul><t t-foreach="application.convalidation_ids" t-as="conv"><li><t t-out="conv.name"/> — <t t-out="dict(conv._fields['state'].selection).get(conv.state)"/></li></t></ul></t><t t-else=""><form t-att-action="'/my/admissions/%s/convalidation' % application.id" method="post" enctype="multipart/form-data"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><label class="form-label">Detalle de la solicitud</label><textarea name="description" class="form-control mb-2" required="required"></textarea><label class="form-label">Documentos de respaldo</label><input type="file" name="convalidation_documents" class="form-control mb-3" accept=".pdf,.jpg,.jpeg,.png" multiple="multiple"/><button class="btn btn-outline-primary" type="submit">Solicitar convalidación</button></form></t></div></div></t>
+                <t t-if="application.state in ['draft','correction']"><form t-att-action="'/my/admissions/%s/submit' % application.id" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button type="submit" class="btn btn-primary btn-lg">Enviar solicitud</button></form></t>
+            </div>
+        </t>
+    </template>
+</odoo>

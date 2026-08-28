@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_academic" model="ir.ui.view">
+        <field name="name">res.partner.form.academic</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Academic" groups="academic_admission_enrollment.group_academic_admissions">
+                    <group>
+                        <group>
+                            <field name="academic_identification_type"/>
+                            <field name="academic_identification"/>
+                            <field name="academic_birth_date"/>
+                        </group>
+                        <group>
+                            <field name="academic_canton"/>
+                            <field name="academic_district"/>
+                            <field name="academic_is_applicant"/>
+                            <field name="academic_is_student"/>
+                            <field name="academic_student_id" readonly="1"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

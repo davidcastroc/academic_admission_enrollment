@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="partner_category_academic_applicant" model="res.partner.category">
+        <field name="name">Prospecto Académico</field>
+    </record>
+    <record id="partner_category_academic_enrolled" model="res.partner.category">
+        <field name="name">Matriculado Académico</field>
+    </record>
+</odoo>

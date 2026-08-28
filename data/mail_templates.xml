@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mail_template_application_submitted" model="mail.template">
+        <field name="name">Academic Application - Submitted</field>
+        <field name="model_id" ref="model_academic_application"/>
+        <field name="subject">Solicitud académica {{ object.name }} recibida</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html"><div><p>Hola <t t-out="object.applicant_name"/>,</p><p>Hemos recibido tu solicitud <strong><t t-out="object.name"/></strong> para <t t-out="object.offering_id.display_name"/>.</p><p>Podrás consultar su estado desde tu portal.</p></div></field>
+    </record>
+    <record id="mail_template_application_correction" model="mail.template">
+        <field name="name">Academic Application - Correction Requested</field>
+        <field name="model_id" ref="model_academic_application"/>
+        <field name="subject">Correcciones requeridas - {{ object.name }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html"><div><p>Hola <t t-out="object.applicant_name"/>,</p><p>Tu solicitud requiere correcciones:</p><p><t t-out="object.correction_note"/></p><p>Ingresa al portal para actualizar la información o documentación.</p></div></field>
+    </record>
+    <record id="mail_template_application_approved" model="mail.template">
+        <field name="name">Academic Application - Approved</field>
+        <field name="model_id" ref="model_academic_application"/>
+        <field name="subject">Solicitud aprobada - {{ object.name }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html"><div><p>Hola <t t-out="object.applicant_name"/>,</p><p>Tu solicitud <strong><t t-out="object.name"/></strong> fue aprobada.</p><p>El proceso continuará con la matrícula según la configuración institucional.</p></div></field>
+    </record>
+    <record id="mail_template_application_rejected" model="mail.template">
+        <field name="name">Academic Application - Rejected</field>
+        <field name="model_id" ref="model_academic_application"/>
+        <field name="subject">Resultado de solicitud - {{ object.name }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html"><div><p>Hola <t t-out="object.applicant_name"/>,</p><p>Tu solicitud fue rechazada.</p><p>Motivo: <t t-out="object.rejection_reason"/></p></div></field>
+    </record>
+    <record id="mail_template_application_enrolled" model="mail.template">
+        <field name="name">Academic Application - Enrolled</field>
+        <field name="model_id" ref="model_academic_application"/>
+        <field name="subject">Matrícula registrada - {{ object.enrollment_id.name }}</field>
+        <field name="email_to">{{ object.email }}</field>
+        <field name="body_html" type="html"><div><p>Hola <t t-out="object.applicant_name"/>,</p><p>Tu matrícula ha sido registrada correctamente con referencia <strong><t t-out="object.enrollment_id.name"/></strong>.</p></div></field>
+    </record>
+</odoo>

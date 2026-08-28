@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_academic_root" name="Academic" sequence="35" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
+    <menuitem id="menu_academic_operations" name="Operations" parent="menu_academic_root" sequence="10"/>
+    <menuitem id="menu_academic_applications" name="Applications" parent="menu_academic_operations" action="action_academic_application" sequence="10" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
+    <menuitem id="menu_academic_documents" name="Documents" parent="menu_academic_operations" action="action_academic_application_document" sequence="20" groups="academic_admission_enrollment.group_academic_admissions"/>
+    <menuitem id="menu_academic_convalidations" name="Convalidations" parent="menu_academic_operations" action="action_academic_convalidation" sequence="30" groups="academic_admission_enrollment.group_academic_admissions"/>
+    <menuitem id="menu_academic_students" name="Students" parent="menu_academic_root" action="action_academic_student" sequence="20" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
+    <menuitem id="menu_academic_enrollments" name="Enrollments" parent="menu_academic_root" action="action_academic_enrollment" sequence="30" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
+    <menuitem id="menu_academic_configuration" name="Configuration" parent="menu_academic_root" sequence="90" groups="academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_programs" name="Programs" parent="menu_academic_configuration" action="action_academic_program" sequence="10"/>
+    <menuitem id="menu_academic_periods" name="Periods" parent="menu_academic_configuration" action="action_academic_period" sequence="20"/>
+    <menuitem id="menu_academic_offerings" name="Offerings" parent="menu_academic_configuration" action="action_academic_offering" sequence="30"/>
+    <menuitem id="menu_academic_doc_types" name="Document Types" parent="menu_academic_configuration" action="action_academic_document_type" sequence="40"/>
+    <menuitem id="menu_academic_doc_requirements" name="Document Requirements" parent="menu_academic_configuration" action="action_academic_document_requirement" sequence="50"/>
+</odoo>

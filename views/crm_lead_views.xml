@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_lead_view_form_academic" model="ir.ui.view">
+        <field name="name">crm.lead.form.academic</field><field name="model">crm.lead</field><field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="academic_application_id" readonly="1" invisible="not academic_application_id"/>
+                <field name="academic_convalidation_id" readonly="1" invisible="not academic_convalidation_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
