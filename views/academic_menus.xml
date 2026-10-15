@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_academic_root" name="Academic" sequence="35" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
-    <menuitem id="menu_academic_operations" name="Operations" parent="menu_academic_root" sequence="10"/>
-    <menuitem id="menu_academic_applications" name="Applications" parent="menu_academic_operations" action="action_academic_application" sequence="10" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
-    <menuitem id="menu_academic_documents" name="Documents" parent="menu_academic_operations" action="action_academic_application_document" sequence="20" groups="academic_admission_enrollment.group_academic_admissions"/>
-    <menuitem id="menu_academic_convalidations" name="Convalidations" parent="menu_academic_operations" action="action_academic_convalidation" sequence="30" groups="academic_admission_enrollment.group_academic_admissions"/>
-    <menuitem id="menu_academic_students" name="Students" parent="menu_academic_root" action="action_academic_student" sequence="20" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
-    <menuitem id="menu_academic_enrollments" name="Enrollments" parent="menu_academic_root" action="action_academic_enrollment" sequence="30" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
-    <menuitem id="menu_academic_configuration" name="Configuration" parent="menu_academic_root" sequence="90" groups="academic_admission_enrollment.group_academic_manager"/>
-    <menuitem id="menu_academic_programs" name="Programs" parent="menu_academic_configuration" action="action_academic_program" sequence="10"/>
-    <menuitem id="menu_academic_periods" name="Periods" parent="menu_academic_configuration" action="action_academic_period" sequence="20"/>
-    <menuitem id="menu_academic_offerings" name="Offerings" parent="menu_academic_configuration" action="action_academic_offering" sequence="30"/>
-    <menuitem id="menu_academic_doc_types" name="Document Types" parent="menu_academic_configuration" action="action_academic_document_type" sequence="40"/>
-    <menuitem id="menu_academic_doc_requirements" name="Document Requirements" parent="menu_academic_configuration" action="action_academic_document_requirement" sequence="50"/>
+    <menuitem id="menu_academic_root" name="Educación" sequence="35" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier,academic_admission_enrollment.group_academic_professor,academic_admission_enrollment.group_academic_registrar"/>
+    <menuitem id="menu_academic_operations" name="Operaciones" parent="menu_academic_root" sequence="10"/>
+    <menuitem id="menu_academic_applications" name="Solicitudes" parent="menu_academic_operations" action="action_academic_application" sequence="10" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
+    <menuitem id="menu_academic_documents" name="Documentos" parent="menu_academic_operations" action="action_academic_application_document" sequence="20" groups="academic_admission_enrollment.group_academic_admissions"/>
+    <menuitem id="menu_academic_convalidations" name="Convalidaciones" parent="menu_academic_operations" action="action_academic_convalidation" sequence="30" groups="academic_admission_enrollment.group_academic_admissions"/>
+    <menuitem id="menu_academic_students" name="Estudiantes" parent="menu_academic_root" action="action_academic_student" sequence="20" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
+    <menuitem id="menu_academic_enrollments" name="Matrículas" parent="menu_academic_root" action="action_academic_enrollment" sequence="30" groups="academic_admission_enrollment.group_academic_admissions,academic_admission_enrollment.group_academic_cashier"/>
+    <menuitem id="menu_academic_configuration" name="Configuración" parent="menu_academic_root" sequence="90" groups="academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_programs" name="Programas" parent="menu_academic_configuration" action="action_academic_program" sequence="10"/>
+    <menuitem id="menu_academic_periods" name="Periodos" parent="menu_academic_configuration" action="action_academic_period" sequence="20"/>
+    <menuitem id="menu_academic_offerings" name="Oferta académica" parent="menu_academic_configuration" action="action_academic_offering" sequence="30"/>
+    <menuitem id="menu_academic_doc_types" name="Tipos de documento" parent="menu_academic_configuration" action="action_academic_document_type" sequence="40"/>
+    <menuitem id="menu_academic_doc_requirements" name="Requisitos documentales" parent="menu_academic_configuration" action="action_academic_document_requirement" sequence="50"/>
+
+    <menuitem id="menu_academic_teaching" name="Gestión académica" parent="menu_academic_root" sequence="35" groups="academic_admission_enrollment.group_academic_professor,academic_admission_enrollment.group_academic_admissions"/>
+    <menuitem id="menu_academic_sections" name="Secciones" parent="menu_academic_teaching" action="action_academic_section" sequence="10"/>
+    <menuitem id="menu_academic_registrations" name="Matrícula por cursos" parent="menu_academic_teaching" action="action_academic_registration" sequence="20" groups="academic_admission_enrollment.group_academic_registrar,academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_grades" name="Libro de calificaciones" parent="menu_academic_teaching" action="action_academic_grade" sequence="30" groups="academic_admission_enrollment.group_academic_professor,academic_admission_enrollment.group_academic_registrar,academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_attendance" name="Asistencia" parent="menu_academic_teaching" action="action_academic_attendance" sequence="40" groups="academic_admission_enrollment.group_academic_professor,academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_assignments" name="Tareas" parent="menu_academic_teaching" action="action_academic_assignment" sequence="50" groups="academic_admission_enrollment.group_academic_professor,academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_professors" name="Profesores" parent="menu_academic_root" action="action_academic_professor" sequence="40" groups="academic_admission_enrollment.group_academic_admissions"/>
+    <menuitem id="menu_academic_courses" name="Cursos / Materias" parent="menu_academic_configuration" action="action_academic_course" sequence="25"/>
+    <menuitem id="menu_academic_integrations" name="Integraciones LMS" parent="menu_academic_configuration" action="action_academic_integration" sequence="80"/>
+
+    <menuitem id="menu_academic_requests" name="Trámites y solicitudes" parent="menu_academic_operations" action="action_academic_request" sequence="40" groups="academic_admission_enrollment.group_academic_registrar,academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_holds" name="Bloqueos" parent="menu_academic_operations" action="action_academic_hold" sequence="50" groups="academic_admission_enrollment.group_academic_registrar,academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_finance" name="Finanzas estudiantiles" parent="menu_academic_root" sequence="45" groups="academic_admission_enrollment.group_academic_cashier,academic_admission_enrollment.group_academic_manager"/>
+    <menuitem id="menu_academic_charges" name="Estado de cuenta / Cargos" parent="menu_academic_finance" action="action_academic_charge" sequence="10"/>
+    <menuitem id="menu_academic_payment_plans" name="Planes de pago" parent="menu_academic_finance" action="action_academic_payment_plan" sequence="20"/>
+    <menuitem id="menu_academic_scholarships" name="Becas y beneficios" parent="menu_academic_finance" action="action_academic_scholarship" sequence="30"/>
+    <menuitem id="menu_academic_curricula" name="Planes de estudio / Mallas" parent="menu_academic_configuration" action="action_academic_curriculum" sequence="26"/>
+    <menuitem id="menu_academic_fee_rules" name="Aranceles" parent="menu_academic_configuration" action="action_academic_fee_rule" sequence="70"/>
+
 </odoo>

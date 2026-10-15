@@ -8,3 +8,11 @@ from . import academic_student
 from . import academic_convalidation
 from . import crm_lead
 from . import integration_services
+
+from . import academic_lms
+from . import academic_enterprise
+from . import academic_finance
+
+from . import academic_ultra
+
+from . import academic_professor_portal

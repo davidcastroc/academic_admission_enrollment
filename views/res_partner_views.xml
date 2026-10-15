@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Academic" groups="academic_admission_enrollment.group_academic_admissions">
+                <page string="Educación" groups="academic_admission_enrollment.group_academic_admissions">
                     <group>
                         <group>
                             <field name="academic_identification_type"/>

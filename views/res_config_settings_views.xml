@@ -6,43 +6,43 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//form" position="inside">
-                <app string="Academic" name="academic_admission_enrollment" groups="academic_admission_enrollment.group_academic_manager">
+                <app string="Educación" name="academic_admission_enrollment" groups="academic_admission_enrollment.group_academic_manager">
                     <block title="Admission and Enrollment">
-                        <setting string="Unique student identifier" help="Controls whether the student record uses identification or generated student card as its configured unique identifier.">
+                        <setting string="Identificador único del estudiante" help="Controls whether the student record uses identification or generated student card as its configured unique identifier.">
                             <field name="academic_identifier_mode"/>
                         </setting>
-                        <setting string="Document review mode">
+                        <setting string="Modo de revisión documental">
                             <field name="academic_review_mode"/>
                         </setting>
-                        <setting string="Minimum age without guarantor">
+                        <setting string="Edad mínima sin fiador">
                             <field name="academic_minimum_age"/>
                         </setting>
-                        <setting string="Require guarantor for underage applicants">
+                        <setting string="Requerir responsable para solicitantes menores">
                             <field name="academic_require_guarantor_minor"/>
                         </setting>
-                        <setting string="Create CRM opportunity on submission">
+                        <setting string="Crear oportunidad CRM al enviar">
                             <field name="academic_auto_create_lead"/>
                         </setting>
-                        <setting string="Create student on approval">
+                        <setting string="Crear estudiante al aprobar">
                             <field name="academic_auto_create_student"/>
                         </setting>
                     </block>
                     <block title="Documents and OCR/AI">
-                        <setting string="Enable OCR/AI processing queue">
+                        <setting string="Habilitar cola OCR/IA">
                             <field name="academic_ocr_enabled"/>
                         </setting>
-                        <setting string="OCR/AI adapter code">
+                        <setting string="Código del adaptador OCR/IA">
                             <field name="academic_ocr_provider"/>
                         </setting>
-                        <setting string="Maximum upload size (MB)">
+                        <setting string="Tamaño máximo de archivo (MB)">
                             <field name="academic_max_upload_mb"/>
                         </setting>
                     </block>
                     <block title="CONESUP">
-                        <setting string="Enable CONESUP integration" help="Enable only after the official integration specification and whitelist authorization are available.">
+                        <setting string="Habilitar integración con CONESUP" help="Enable only after the official integration specification and whitelist authorization are available.">
                             <field name="academic_conesup_enabled"/>
                         </setting>
-                        <setting string="CONESUP base URL">
+                        <setting string="URL base de CONESUP">
                             <field name="academic_conesup_base_url"/>
                         </setting>
                     </block>

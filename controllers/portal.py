@@ -14,6 +14,9 @@ class AcademicPortal(CustomerPortal):
             values["admission_count"] = request.env["academic.application"].sudo().search_count([
                 ("partner_id", "=", request.env.user.partner_id.id)
             ])
+        if "academic_suite_count" in counters:
+            student = request.env["academic.student"].sudo().search([("partner_id", "=", request.env.user.partner_id.id)], limit=1)
+            values["academic_suite_count"] = request.env["academic.course.registration"].sudo().search_count([("student_id", "=", student.id)]) if student else 0
         return values
 
     def _owned_application(self, application_id):
@@ -135,22 +138,31 @@ class AcademicPortal(CustomerPortal):
             if mime not in {"application/pdf", "image/jpeg", "image/png"}:
                 raise ValidationError(_("Only PDF, JPG/JPEG and PNG files are allowed."))
             existing = request.env["academic.application.document"].sudo().search([
-                ("application_id", "=", application.id), ("document_type_id", "=", document_type.id)
+                ("application_id", "=", application.id),
+                ("document_type_id", "=", document_type.id),
             ], limit=1)
-            old_attachment = existing.attachment_id if existing else request.env["ir.attachment"]
-            if existing:
-                existing.unlink()
-                old_attachment.unlink()
+
             attachment = request.env["ir.attachment"].sudo().create({
                 "name": upload.filename,
                 "datas": base64.b64encode(content),
                 "mimetype": mime,
             })
-            request.env["academic.application.document"].sudo().create({
-                "application_id": application.id,
-                "document_type_id": document_type.id,
-                "attachment_id": attachment.id,
-            })
+
+            if existing:
+                old_attachment = existing.attachment_id
+                existing.write({
+                    "attachment_id": attachment.id,
+                    "state": "pending",
+                    "review_note": False,
+                })
+                if old_attachment and old_attachment.exists():
+                    old_attachment.unlink()
+            else:
+                request.env["academic.application.document"].sudo().create({
+                    "application_id": application.id,
+                    "document_type_id": document_type.id,
+                    "attachment_id": attachment.id,
+                })
             return request.redirect("/my/admissions/%s" % application.id)
         except (AccessError, ValidationError, ValueError) as exc:
             return self._portal_error(exc, application if "application" in locals() else None)

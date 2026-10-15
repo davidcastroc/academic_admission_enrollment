@@ -1,0 +1,564 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<odoo>
+ <template id="portal_academic_home" name="Mi vida académica">
+    <t t-call="portal.portal_layout">
+        <t t-set="title">Mi portal académico</t>
+
+        <div class="container py-4">
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <span class="badge rounded-pill text-bg-light mb-2">
+                        Academic 360
+                    </span>
+                    <h2 class="mb-1">🎓 Mi portal académico</h2>
+
+                    <p class="text-muted mb-0" t-if="student">
+                        <t t-esc="student.partner_id.name"/>
+                        · <t t-esc="student.program_id.name"/>
+                        · Carné <t t-esc="student.code"/>
+                    </p>
+
+                    <p class="text-muted mb-0" t-else="">
+                        <t t-esc="partner.name"/>
+                        · Admisión y servicios académicos
+                    </p>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="/my/admissions" class="btn btn-outline-primary">
+                        Mis solicitudes de admisión
+                    </a>
+
+                    <a href="/academic/apply" class="btn btn-primary">
+                        Nueva admisión
+                    </a>
+                </div>
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- ADMISION -->
+            <!-- ===================================================== -->
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                        <div>
+                            <h4 class="mb-1">📥 Admisión</h4>
+                            <p class="text-muted mb-0">
+                                Solicitudes, requisitos, documentos,
+                                revisión administrativa y convalidaciones.
+                            </p>
+                        </div>
+
+                        <a href="/academic/apply" class="btn btn-outline-primary">
+                            + Nueva solicitud
+                        </a>
+                    </div>
+
+                    <t t-if="applications">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Solicitud</th>
+                                        <th>Programa</th>
+                                        <th>Estado</th>
+                                        <th>Documentos</th>
+                                        <th/>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr t-foreach="applications[:5]" t-as="app">
+
+                                        <td>
+                                            <strong>
+                                                <t t-esc="app.name"/>
+                                            </strong>
+                                        </td>
+
+                                        <td>
+                                            <t t-esc="app.offering_id.program_id.name"/>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge text-bg-light">
+                                                <t t-esc="dict(app._fields['state'].selection).get(app.state)"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <t t-if="app.missing_required_documents">
+                                                <span class="text-danger">
+                                                    <t t-esc="app.missing_required_documents"/>
+                                                    pendiente(s)
+                                                </span>
+                                            </t>
+
+                                            <t t-else="">
+                                                <span class="text-success">
+                                                    Requisitos cargados
+                                                </span>
+                                            </t>
+                                        </td>
+
+                                        <td class="text-end">
+                                            <a t-att-href="'/my/admissions/%s' % app.id" class="btn btn-sm btn-outline-primary">
+                                                Gestionar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+
+                    <t t-else="">
+                        <div class="alert alert-info mb-0">
+                            Todavía no tenés solicitudes de admisión.
+                            Desde aquí podés iniciar el proceso completo,
+                            cargar requisitos y darle seguimiento.
+                        </div>
+                    </t>
+
+                </div>
+            </div>
+
+            <!-- ===================================================== -->
+            <!-- TODAVIA NO ES ESTUDIANTE -->
+            <!-- ===================================================== -->
+
+            <t t-if="not student">
+                <div class="row g-3">
+
+                    <div class="col-lg-4">
+                        <a href="/my/admissions" class="card h-100 text-decoration-none shadow-sm">
+                            <div class="card-body p-4">
+                                <h5>📋 Mis solicitudes</h5>
+                                <p class="text-muted mb-0">
+                                    Consultá el estado de admisión y
+                                    cualquier corrección pendiente.
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <a href="/academic/apply" class="card h-100 text-decoration-none shadow-sm">
+                            <div class="card-body p-4">
+                                <h5>📎 Requisitos y documentos</h5>
+                                <p class="text-muted mb-0">
+                                    Iniciá una solicitud y cargá los
+                                    documentos requeridos por la carrera.
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body p-4">
+                                <h5>🎓 Vida estudiantil</h5>
+                                <p class="text-muted mb-0">
+                                    Cuando tu proceso sea aprobado y se
+                                    cree tu expediente estudiantil, acá
+                                    aparecerán matrícula, cursos, notas,
+                                    plan de estudios y trámites.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+
+            <!-- ===================================================== -->
+            <!-- ESTUDIANTE -->
+            <!-- ===================================================== -->
+
+            <t t-if="student">
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-lg-3 col-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="text-muted">
+                                    Progreso de carrera
+                                </small>
+
+                                <h2>
+                                    <t t-esc="'%.1f' % student.career_progress"/>%
+                                </h2>
+
+                                <div class="progress">
+                                    <div class="progress-bar" t-attf-style="width: #{student.career_progress or 0}%;"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="text-muted">
+                                    Promedio ponderado
+                                </small>
+
+                                <h2 t-esc="'%.2f' % student.gpa"/>
+
+                                <small>
+                                    <t t-esc="student.credits_approved"/>
+                                    créditos aprobados
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="text-muted">
+                                    Cursos activos
+                                </small>
+
+                                <h2 t-esc="len(active_regs)"/>
+
+                                <small>
+                                    <t t-esc="student.remaining_credits"/>
+                                    créditos pendientes
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-6">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body">
+                                <small class="text-muted">
+                                    Bloqueos
+                                </small>
+
+                                <h2 t-esc="len(student.hold_ids.filtered('active'))"/>
+
+                                <small t-if="student.hold_ids.filtered('active')" class="text-danger">
+                                    Revisar antes de matricular
+                                </small>
+
+                                <small t-else="" class="text-success">
+                                    Sin bloqueos activos
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/my/academic/enroll" class="card h-100 text-decoration-none shadow-sm">
+                            <div class="card-body p-4">
+                                <h5>📝 Matrícula en línea</h5>
+                                <p class="text-muted mb-0">
+                                    Oferta, cupos, horarios,
+                                    prerrequisitos y matrícula.
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/my/academic/plan" class="card h-100 text-decoration-none shadow-sm">
+                            <div class="card-body p-4">
+                                <h5>🗺️ Plan de estudios</h5>
+                                <p class="text-muted mb-0">
+                                    Malla curricular, avance,
+                                    créditos y prerrequisitos.
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/my/academic/grades" class="card h-100 text-decoration-none shadow-sm">
+                            <div class="card-body p-4">
+                                <h5>📊 Notas y expediente</h5>
+                                <p class="text-muted mb-0">
+                                    Evaluaciones, notas finales
+                                    e historial académico.
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="col-lg-3 col-md-6">
+                        <a href="/my/academic/services" class="card h-100 text-decoration-none shadow-sm">
+                            <div class="card-body p-4">
+                                <h5>📄 Trámites y solicitudes</h5>
+                                <p class="text-muted mb-0">
+                                    Certificaciones, retiros,
+                                    cambios y otras gestiones.
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <h4 class="mb-1">📚 Mis cursos actuales</h4>
+                                <p class="text-muted mb-0">
+                                    Acceso a evaluaciones, tareas y avance.
+                                </p>
+                            </div>
+                        </div>
+
+                        <t t-if="active_regs">
+                            <div class="row g-3">
+                                <div class="col-lg-4 col-md-6" t-foreach="active_regs" t-as="r">
+
+                                    <a t-att-href="'/my/academic/course/%s' % r.id" class="card h-100 text-decoration-none">
+
+                                        <div class="card-body">
+                                            <strong>
+                                                <t t-esc="r.course_id.code"/>
+                                            </strong>
+
+                                            <h5 class="mt-2">
+                                                <t t-esc="r.course_id.name"/>
+                                            </h5>
+
+                                            <p class="text-muted mb-2">
+                                                <t t-esc="r.section_id.schedule or 'Horario por definir'"/>
+                                            </p>
+
+                                            <small>
+                                                Nota actual:
+                                                <strong>
+                                                    <t t-esc="'%.2f' % r.final_grade"/>
+                                                </strong>
+                                            </small>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </t>
+
+                        <t t-else="">
+                            <div class="alert alert-light border mb-0">
+                                No tenés cursos activos actualmente.
+                            </div>
+                        </t>
+                    </div>
+                </div>
+
+            </t>
+
+        </div>
+    </t>
+</template><template id="portal_academic_plan" name="Plan de estudios"><t t-call="portal.portal_layout"><div class="container py-4"><a href="/my/academic">← Portal académico</a><div class="d-flex justify-content-between align-items-end my-3"><div><h2>🗺️ Plan de estudios</h2><p class="text-muted"><t t-esc="student.curriculum_id.name or student.program_id.name"/></p></div><div class="text-end"><h3><t t-esc="'%.1f' % student.career_progress"/>%</h3><small>avance de carrera</small></div></div><div class="progress mb-4" style="height:12px"><div class="progress-bar" t-attf-style="width: #{student.career_progress or 0}%;"/></div><div t-foreach="sorted(set(lines.mapped('level')))" t-as="lvl" class="mb-4"><h4><t t-esc="lvl"/>° periodo</h4><div class="row g-3"><div class="col-lg-4 col-md-6" t-foreach="lines.filtered(lambda x: x.level == lvl)" t-as="l"><div t-att-class="'card h-100 border-%s' % ('success' if l.course_id.id in passed else ('primary' if l.course_id.id in active else 'secondary'))"><div class="card-body"><div class="d-flex justify-content-between"><strong t-esc="l.course_id.code"/><span class="badge text-bg-light"><t t-esc="l.credits"/> cr.</span></div><h6 class="mt-2" t-esc="l.course_id.name"/><small><b>Duración:</b> <t t-esc="l.course_id.duration_weeks"/> semanas</small><br/><small><b>Requisitos:</b> <t t-esc="', '.join(l.course_id.prerequisite_ids.mapped('code')) or 'Ninguno'"/></small><div class="mt-3"><span t-if="l.course_id.id in passed" class="badge text-bg-success">Aprobado</span><span t-elif="l.course_id.id in active" class="badge text-bg-primary">En curso</span><span t-else="" class="badge text-bg-secondary">Pendiente</span></div></div></div></div></div></div></div></t></template>
+
+ <template id="portal_academic_grades" name="Mis calificaciones"><t t-call="portal.portal_layout"><div class="container py-4"><a href="/my/academic">← Portal académico</a><h2 class="my-3">📊 Calificaciones y expediente</h2><div class="card mb-3" t-foreach="registrations" t-as="r"><div class="card-header d-flex justify-content-between"><strong><t t-esc="r.course_id.code"/> · <t t-esc="r.course_id.name"/></strong><span>Final: <b t-esc="'%.2f' % r.final_grade"/></span></div><div class="card-body"><div class="progress mb-3"><div class="progress-bar" t-attf-style="width: #{r.progress_percent or 0}%;"/></div><table class="table table-sm"><thead><tr><th>Evaluación</th><th>Peso</th><th>Puntaje</th><th>%</th><th>Retroalimentación</th></tr></thead><tbody><tr t-foreach="r.grade_ids.filtered(lambda g: g.state == 'published' and g.assessment_id.published)" t-as="g"><td t-esc="g.assessment_id.name"/><td><t t-esc="g.assessment_id.weight"/>%</td><td><t t-esc="g.score"/> / <t t-esc="g.assessment_id.max_score"/></td><td t-esc="'%.2f' % g.percentage"/><td><span t-field="g.feedback"/></td></tr></tbody></table></div></div></div></t></template>
+
+ <template id="portal_academic_enroll" name="Matrícula en línea"><t t-call="portal.portal_layout"><div class="container py-4"><a href="/my/academic">← Portal académico</a><h2 class="my-3">📝 Matrícula en línea</h2><div t-if="student.hold_ids.filtered(lambda h:h.active and h.blocking)" class="alert alert-danger"><b>Tenés bloqueos que pueden impedir la matrícula.</b><ul class="mb-0"><li t-foreach="student.hold_ids.filtered(lambda h:h.active and h.blocking)" t-as="h" t-esc="h.name"/></ul></div><p class="text-muted">El sistema valida automáticamente prerrequisitos, créditos, promedio, bloqueos, cupos y choques de horario.</p><div class="row g-3"><div class="col-lg-6" t-foreach="sections" t-as="s"><div class="card h-100 shadow-sm"><div class="card-body"><h5><t t-esc="s.course_id.code"/> · <t t-esc="s.course_id.name"/></h5><p><b>Sección:</b> <t t-esc="s.code"/> · <b>Créditos:</b> <t t-esc="s.course_id.credits"/> · <b>Duración:</b> <t t-esc="s.course_id.duration_weeks"/> semanas</p><p><b>Horario:</b> <t t-esc="s.schedule or 'Por definir'"/><br/><b>Prerrequisitos:</b> <t t-esc="', '.join(s.course_id.prerequisite_ids.mapped('code')) or 'Ninguno'"/><br/><b>Cupos:</b> <t t-esc="s.available_seats"/></p><form t-if="s.id not in registered_ids" t-att-action="'/my/academic/enroll/%s' % s.id" method="post"><input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/><button class="btn btn-primary" type="submit">Matricular</button></form><span t-else="" class="badge text-bg-success">Ya registrada</span></div></div></div></div></div></t></template>
+
+ <template id="portal_academic_course_detail" name="Detalle del curso"><t t-call="portal.portal_layout"><div class="container py-4"><a href="/my/academic">← Mis cursos</a><h2 class="my-3"><t t-esc="r.course_id.code"/> · <t t-esc="r.course_id.name"/></h2><div class="row g-3 mb-4"><div class="col-md-4"><div class="card"><div class="card-body"><small>Avance evaluado</small><h2><t t-esc="'%.0f' % r.progress_percent"/>%</h2></div></div></div><div class="col-md-4"><div class="card"><div class="card-body"><small>Nota actual</small><h2 t-esc="'%.2f' % r.final_grade"/></div></div></div><div class="col-md-4"><div class="card"><div class="card-body"><small>Horario</small><h6 t-esc="r.section_id.schedule or 'Por definir'"/></div></div></div></div><h4>Evaluaciones</h4><table class="table"><tr t-foreach="r.section_id.assessment_ids.filtered('published')" t-as="a"><td t-esc="a.name"/><td><t t-esc="a.weight"/>%</td><td t-esc="a.date or '-'"/></tr></table><h4 class="mt-4">Tareas</h4><table class="table"><tr t-foreach="r.section_id.assignment_ids" t-as="a"><td t-esc="a.name"/><td t-esc="a.due_date or '-'"/></tr></table></div></t></template>
+
+ <template id="portal_academic_services" name="Solicitudes y trámites">
+
+    <t t-call="portal.portal_layout">
+        <t t-set="title">Trámites y solicitudes</t>
+
+        <div class="container py-4">
+
+            <a href="/my/academic">
+                ← Portal académico
+            </a>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center my-3">
+                <div>
+                    <h2 class="mb-1">📄 Trámites y solicitudes</h2>
+                    <p class="text-muted mb-0">
+                        Realizá y consultá tus gestiones académicas.
+                    </p>
+                </div>
+            </div>
+
+            <div t-if="success" class="alert alert-success">
+                ✅ Tu solicitud fue presentada correctamente.
+            </div>
+
+            <div t-if="error == 'invalid_type'" class="alert alert-danger">
+                Seleccioná un tipo de trámite válido.
+            </div>
+
+            <div t-if="error == 'missing_description'" class="alert alert-danger">
+                Debés indicar el detalle de la solicitud.
+            </div>
+
+            <div t-if="error == 'invalid_service'" class="alert alert-danger">Seleccioná un trámite válido del catálogo.</div><div t-if="error == 'attachment_required'" class="alert alert-danger">Este trámite requiere documentación de respaldo.</div><div t-if="error == 'invalid_attachment'" class="alert alert-danger">Los documentos deben ser PDF, JPG o PNG.</div><div t-if="error == 'attachment_too_large'" class="alert alert-danger">Uno de los documentos supera el tamaño máximo permitido.</div><div class="row g-4">
+
+                <div class="col-lg-5">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body p-4">
+
+                            <h4>Nueva solicitud</h4>
+
+                            <p class="text-muted">
+                                La gestión ingresará directamente al
+                                flujo administrativo de Academic 360.
+                            </p>
+
+                            <form action="/my/academic/services/create" method="post" enctype="multipart/form-data">
+
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        Tipo de gestión
+                                    </label>
+
+                                    <select name="service_id" class="form-select" required="required">
+
+                                        <option value="">Seleccionar trámite...</option><t t-foreach="services" t-as="service"><option t-att-value="service.id"><t t-esc="service.name"/></option></t></select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        Detalle
+                                    </label>
+
+                                    <textarea name="description" class="form-control" rows="5" required="required" placeholder="Explicá brevemente qué necesitás..."/>
+                                </div>
+
+                                <div class="mb-3"><label class="form-label">Documentos de respaldo</label><input type="file" name="attachments" class="form-control" accept=".pdf,.jpg,.jpeg,.png" multiple="multiple"/><div class="form-text">Podés adjuntar PDF, JPG o PNG. Algunos trámites requieren documentación obligatoria.</div></div><button type="submit" class="btn btn-primary w-100">
+                                    Presentar solicitud
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+
+                    <h4 class="mb-3">Catálogo de servicios</h4>
+
+                    <t t-if="services">
+                        <div class="row g-3 mb-4">
+
+                            <div class="col-md-6" t-foreach="services" t-as="s">
+
+                                <div class="card h-100">
+                                    <div class="card-body">
+
+                                        <span class="badge text-bg-light">
+                                            <t t-esc="s.category"/>
+                                        </span>
+
+                                        <h5 class="mt-2">
+                                            <t t-esc="s.name"/>
+                                        </h5>
+
+                                        <div t-field="s.description"/>
+
+                                        <div class="mt-3">
+                                            <small class="text-muted">
+                                                Tiempo objetivo:
+                                                <t t-esc="s.sla_days"/>
+                                                día(s)
+                                            </small>
+                                        </div>
+
+                                        <div t-if="s.fee" class="mt-1">
+                                            <small>
+                                                Costo:
+                                                <span t-field="s.fee" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: s.currency_id}"/>
+                                            </small>
+                                        </div>
+
+                                        <div t-if="s.requires_attachment" class="mt-1">
+                                            <small class="text-warning">
+                                                Requiere documentación de respaldo
+                                            </small>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </t>
+
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mt-4">
+                <div class="card-body p-4">
+
+                    <h4>Mis solicitudes</h4>
+
+                    <t t-if="requests">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Tipo</th>
+                                        <th>Estado</th>
+                                        <th>Presentada</th>
+                                        <th>Resolución</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr t-foreach="requests" t-as="r">
+
+                                        <td>
+                                            <strong t-esc="r.name"/>
+                                        </td>
+
+                                        <td>
+                                            <t t-esc="dict(r._fields['request_type'].selection).get(r.request_type)"/>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge text-bg-light">
+                                                <t t-esc="dict(r._fields['state'].selection).get(r.state)"/>
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span t-field="r.date_submitted"/>
+                                        </td>
+
+                                        <td>
+                                            <t t-esc="r.resolution or 'Pendiente'"/>
+                                        </td>
+
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
+
+                    <t t-else="">
+                        <div class="alert alert-light border mb-0">
+                            No tenés trámites estudiantiles presentados.
+                        </div>
+                    </t>
+
+                </div>
+            </div>
+
+        </div>
+    </t>
+</template><template id="portal_my_home_academic_suite" inherit_id="portal.portal_my_home" priority="40"><xpath expr="//div[hasclass('o_portal_docs')]" position="inside"><t t-call="portal.portal_docs_entry"><t t-set="title">Portal académico</t><t t-set="url" t-value="'/my/academic'"/><t t-set="text">Matrícula, plan de estudios, progreso, cursos, notas y trámites</t><t t-set="placeholder_count" t-value="'academic_suite_count'"/></t></xpath></template>
+</odoo>

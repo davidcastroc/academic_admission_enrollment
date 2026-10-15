@@ -11,7 +11,7 @@
         </xpath>
     </template>
 
-    <template id="portal_my_applications" name="My Academic Applications">
+    <template id="portal_my_applications" name="Mis solicitudes académicas">
         <t t-call="portal.portal_layout">
             <div class="container py-4 o_academic_portal">
                 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -33,7 +33,7 @@
         </t>
     </template>
 
-    <template id="portal_application_form" name="Academic Application Form">
+    <template id="portal_application_form" name="Formulario de solicitud académica">
         <t t-call="portal.portal_layout">
             <div class="container py-4 o_academic_portal">
                 <h2>Nueva solicitud académica</h2>
@@ -61,7 +61,7 @@
         </t>
     </template>
 
-    <template id="portal_application_detail" name="Academic Application Detail">
+    <template id="portal_application_detail" name="Detalle de solicitud académica">
         <t t-call="portal.portal_layout">
             <div class="container py-4 o_academic_portal">
                 <div class="d-flex justify-content-between align-items-start mb-3"><div><h2><t t-out="application.name"/></h2><p class="text-muted mb-0"><t t-out="application.offering_id.display_name"/></p></div><a href="/my/admissions" class="btn btn-outline-secondary">Volver</a></div>

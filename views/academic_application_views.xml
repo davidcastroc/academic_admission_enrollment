@@ -6,11 +6,11 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name"/><field name="applicant_name"/><field name="identification"/><field name="partner_id"/><field name="offering_id"/><field name="state"/>
-                <filter string="Correction Required" name="needs_attention" domain="[('state', '=', 'correction')]"/>
-                <filter string="Approved" name="approved" domain="[('state', 'in', ['approved','enrolled'])]"/>
-                <group expand="0" string="Group By">
-                    <filter string="State" name="group_state" context="{'group_by':'state'}"/>
-                    <filter string="Offering" name="group_offering" context="{'group_by':'offering_id'}"/>
+                <filter string="Requiere corrección" name="needs_attention" domain="[('state', '=', 'correction')]"/>
+                <filter string="Aprobada" name="approved" domain="[('state', 'in', ['approved','enrolled'])]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter string="Estado" name="group_state" context="{'group_by':'state'}"/>
+                    <filter string="Oferta académica" name="group_offering" context="{'group_by':'offering_id'}"/>
                 </group>
             </search>
         </field>
@@ -30,32 +30,32 @@
         <field name="name">academic.application.form</field>
         <field name="model">academic.application</field>
         <field name="arch" type="xml">
-            <form string="Academic Application">
+            <form string="Solicitud académica">
                 <header>
-                    <button name="action_submit" type="object" string="Submit" class="btn-primary" invisible="state not in ['draft','correction']" groups="academic_admission_enrollment.group_academic_admissions"/>
-                    <button name="action_send_admin_review" type="object" string="Administrative Review" class="btn-secondary" invisible="state not in ['auto_review','submitted']" groups="academic_admission_enrollment.group_academic_admissions"/>
-                    <button name="action_send_academic_review" type="object" string="Academic Review" class="btn-primary" invisible="state != 'admin_review'" groups="academic_admission_enrollment.group_academic_admissions"/>
-                    <button name="action_request_correction" type="object" string="Request Correction" class="btn-secondary" invisible="state not in ['auto_review','admin_review','academic_review']" groups="academic_admission_enrollment.group_academic_admissions"/>
-                    <button name="action_approve" type="object" string="Approve" class="btn-primary" invisible="state != 'academic_review'" groups="academic_admission_enrollment.group_academic_direction"/>
-                    <button name="action_reject" type="object" string="Reject" class="btn-secondary" invisible="state not in ['admin_review','academic_review']" groups="academic_admission_enrollment.group_academic_direction"/>
-                    <button name="action_create_student" type="object" string="Create Student" invisible="state not in ['approved','enrolled'] or student_id" groups="academic_admission_enrollment.group_academic_admissions"/>
-                    <button name="action_enroll" type="object" string="Enroll" class="btn-primary" invisible="state != 'approved'" groups="academic_admission_enrollment.group_academic_admissions"/>
-                    <button name="action_check_conesup" type="object" string="Check CONESUP" class="btn-secondary" invisible="state in ['draft','cancelled']" groups="academic_admission_enrollment.group_academic_direction"/>
-                    <button name="action_cancel" type="object" string="Cancel" invisible="state in ['cancelled','enrolled']" groups="academic_admission_enrollment.group_academic_manager"/>
-                    <button name="action_reset_draft" type="object" string="Reset to Draft" invisible="state == 'draft'" groups="academic_admission_enrollment.group_academic_manager"/>
+                    <button name="action_submit" type="object" string="Enviar" class="btn-primary" invisible="state not in ['draft','correction']" groups="academic_admission_enrollment.group_academic_admissions"/>
+                    <button name="action_send_admin_review" type="object" string="Revisión administrativa" class="btn-secondary" invisible="state not in ['auto_review','submitted']" groups="academic_admission_enrollment.group_academic_admissions"/>
+                    <button name="action_send_academic_review" type="object" string="Revisión académica" class="btn-primary" invisible="state != 'admin_review'" groups="academic_admission_enrollment.group_academic_admissions"/>
+                    <button name="action_request_correction" type="object" string="Solicitar corrección" class="btn-secondary" invisible="state not in ['auto_review','admin_review','academic_review']" groups="academic_admission_enrollment.group_academic_admissions"/>
+                    <button name="action_approve" type="object" string="Aprobar" class="btn-primary" invisible="state != 'academic_review'" groups="academic_admission_enrollment.group_academic_direction"/>
+                    <button name="action_reject" type="object" string="Rechazar" class="btn-secondary" invisible="state not in ['admin_review','academic_review']" groups="academic_admission_enrollment.group_academic_direction"/>
+                    <button name="action_create_student" type="object" string="Crear estudiante" invisible="state not in ['approved','enrolled'] or student_id" groups="academic_admission_enrollment.group_academic_admissions"/>
+                    <button name="action_enroll" type="object" string="Matricular" class="btn-primary" invisible="state != 'approved'" groups="academic_admission_enrollment.group_academic_admissions"/>
+                    <button name="action_check_conesup" type="object" string="Consultar CONESUP" class="btn-secondary" invisible="state in ['draft','cancelled']" groups="academic_admission_enrollment.group_academic_direction"/>
+                    <button name="action_cancel" type="object" string="Cancelar" invisible="state in ['cancelled','enrolled']" groups="academic_admission_enrollment.group_academic_manager"/>
+                    <button name="action_reset_draft" type="object" string="Restablecer a borrador" invisible="state == 'draft'" groups="academic_admission_enrollment.group_academic_manager"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,submitted,auto_review,admin_review,academic_review,correction,approved,enrolled"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="action" name="%(action_academic_application_document)d" icon="fa-file" context="{'search_default_application_id': id}" invisible="not id">
-                            <field name="missing_required_documents" widget="statinfo" string="Missing Docs"/>
+                            <field name="missing_required_documents" widget="statinfo" string="Documentos faltantes"/>
                         </button>
                     </div>
                     <widget name="web_ribbon" title="Correction Required" bg_color="text-bg-warning" invisible="state != 'correction'"/>
                     <widget name="web_ribbon" title="Approved" bg_color="text-bg-success" invisible="state != 'approved'"/>
                     <div class="oe_title"><label for="name"/><h1><field name="name" readonly="1"/></h1></div>
                     <group>
-                        <group string="Applicant">
+                        <group string="Solicitante">
                             <field name="partner_id"/>
                             <field name="applicant_name"/>
                             <field name="identification_type"/>
@@ -64,7 +64,7 @@
                             <field name="age" readonly="1"/>
                             <field name="requires_guarantor" readonly="1"/>
                         </group>
-                        <group string="Application">
+                        <group string="Solicitud">
                             <field name="offering_id"/>
                             <field name="crm_lead_id" readonly="1"/>
                             <field name="student_id" readonly="1"/>
@@ -74,33 +74,33 @@
                             <field name="invalid_documents" readonly="1"/>
                         </group>
                     </group>
-                    <group string="Contact and Address">
+                    <group string="Contacto y dirección">
                         <group><field name="email"/><field name="phone"/><field name="country_id"/><field name="state_id"/></group>
                         <group><field name="canton"/><field name="district"/><field name="street"/></group>
                     </group>
                     <notebook>
-                        <page string="Documents">
+                        <page string="Documentos">
                             <field name="document_ids" context="{'default_application_id': id}">
                                 <list editable="bottom"><field name="document_type_id"/><field name="attachment_id"/><field name="state"/><field name="expiry_date"/><field name="is_expired"/><field name="ocr_confidence"/><field name="review_note"/></list>
                             </field>
                         </page>
-                        <page string="Guarantor / Responsible" invisible="not requires_guarantor and not guarantor_ids">
+                        <page string="Fiador / Responsable" invisible="not requires_guarantor and not guarantor_ids">
                             <field name="guarantor_ids" context="{'default_application_id': id}">
                                 <list editable="bottom"><field name="partner_id"/><field name="relationship"/><field name="identification"/><field name="phone"/><field name="email"/><field name="state"/></list>
                             </field>
                         </page>
-                        <page string="Convalidations">
+                        <page string="Convalidaciones">
                             <field name="convalidation_ids" context="{'default_application_id': id}">
                                 <list><field name="name"/><field name="state"/><field name="crm_lead_id"/><field name="create_date"/></list>
                             </field>
                         </page>
-                        <page string="Decision">
+                        <page string="Decisión">
                             <group><field name="correction_note" placeholder="Explain what the applicant must correct..."/><field name="rejection_reason" placeholder="Required before rejection..."/></group>
                         </page>
                         <page string="CONESUP">
                             <group><field name="conesup_status" readonly="1"/><field name="conesup_message" readonly="1"/></group>
                         </page>
-                        <page string="Audit">
+                        <page string="Auditoría">
                             <field name="event_ids" readonly="1"><list create="0" delete="0"><field name="event_date"/><field name="user_id"/><field name="code"/><field name="description"/></list></field>
                         </page>
                     </notebook>

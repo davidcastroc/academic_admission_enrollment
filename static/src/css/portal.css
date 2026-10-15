@@ -1,2 +1,12 @@
 .o_academic_portal .card { border-radius: 0.8rem; }
 .o_academic_portal .academic-status { font-weight: 600; }
+.o_portal_wrap .card { border-radius: 14px; }
+.o_portal_wrap .progress { border-radius: 999px; }
+.o_portal_wrap .btn { border-radius: 10px; }
+.prof360 .card{border:0;box-shadow:0 8px 30px rgba(15,23,42,.08)}
+.prof360-hero{background:linear-gradient(135deg,#172554,#1d4ed8);color:white;border-radius:22px;padding:28px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.prof360-action{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:#172554;background:white;border:1px solid #e5e7eb;border-radius:16px;padding:20px;height:100%;box-shadow:0 6px 24px rgba(15,23,42,.06)}
+.prof360-action:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(15,23,42,.1)}
+.prof360-action span{color:#64748b;font-size:.9rem}
+.prof360-gradebook th{background:#f8fafc;min-width:130px}.prof360-gradebook .sticky-col{position:sticky;left:0;z-index:2;background:white;min-width:240px}.prof360-gradebook thead .sticky-col{background:#f8fafc;z-index:3}
+@media(max-width:768px){.prof360-hero{align-items:flex-start;flex-direction:column}.prof360-gradebook .sticky-col{min-width:180px}}
