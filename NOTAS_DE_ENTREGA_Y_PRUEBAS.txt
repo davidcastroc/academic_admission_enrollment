@@ -1,0 +1,13 @@
+ACADEMIC 360 - PAQUETE DE REVISIÓN ADICIONAL (NO CERTIFICADO)
+
+Cambios concretos:
+- Nombre de acción de admisiones: Registro / Primer ingreso.
+- Costa Rica por defecto en nuevas solicitudes (modelo y formulario).
+- Navegación portal con enlace de salida y enlaces a trámites/admisiones.
+- Campo de conteo de documentos faltantes visible en formulario administrativo.
+
+No se declara resuelto el informe completo. Requiere validación de reglas de fiador/DIMEX, CONAPE vs CONESUP, modelo de Offering opcional, CABYS, grupos, planes, finanzas, experiencia móvil, permisos y pruebas de integración.
+
+Pruebas necesarias en una base Odoo 18 de staging: actualizar módulo, revisar vistas, crear solicitud desde portal, subir y reemplazar adjuntos, enviar solicitud, verificar CRM, aprobar, matricular, convalidar, crear trámite, evaluar permisos por empresa y profesor.
+
+NO INSTALAR EN PRODUCCIÓN SIN RESPALDO Y PRUEBAS.

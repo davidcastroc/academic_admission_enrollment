@@ -22,7 +22,7 @@ class AcademicPortal(CustomerPortal):
     def _owned_application(self, application_id):
         application = request.env["academic.application"].sudo().browse(int(application_id)).exists()
         owner = request.env.user.partner_id
-        if not application or application.partner_id.commercial_partner_id != owner:
+        if not application or application.partner_id.id != owner.id:
             raise AccessError(_("You do not have access to this application."))
         return application
 
@@ -45,6 +45,7 @@ class AcademicPortal(CustomerPortal):
         return {
             "offerings": offerings,
             "countries": request.env["res.country"].sudo().search([]),
+            "default_country_id": partner.country_id.id or request.env.ref("base.cr", raise_if_not_found=False).id,
             "states": request.env["res.country.state"].sudo().search([]),
             "partner": partner,
         }
@@ -63,6 +64,7 @@ class AcademicPortal(CustomerPortal):
             "requirements": requirements,
             "document_types": doc_types,
             "countries": request.env["res.country"].sudo().search([]),
+            "default_country_id": partner.country_id.id or request.env.ref("base.cr", raise_if_not_found=False).id,
             "states": request.env["res.country.state"].sudo().search([]),
         }
 
@@ -154,6 +156,12 @@ class AcademicPortal(CustomerPortal):
                     "attachment_id": attachment.id,
                     "state": "pending",
                     "review_note": False,
+                    "reviewer_id": False,
+                    "reviewed_at": False,
+                    "expiry_date": False,
+                    "ocr_confidence": 0.0,
+                    "ocr_result": False,
+                    "detected_document_type": False,
                 })
                 if old_attachment and old_attachment.exists():
                     old_attachment.unlink()

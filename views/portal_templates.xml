@@ -14,6 +14,7 @@
     <template id="portal_my_applications" name="Mis solicitudes académicas">
         <t t-call="portal.portal_layout">
             <div class="container py-4 o_academic_portal">
+                <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Navegación académica"><a class="btn btn-outline-secondary btn-sm" href="/my/academic">Mi portal académico</a><a class="btn btn-outline-secondary btn-sm" href="/my/admissions">Registro / Primer ingreso</a><a class="btn btn-outline-secondary btn-sm" href="/web/session/logout?redirect=/web/login">Cerrar sesión</a></nav>
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2>Mis solicitudes académicas</h2>
                     <a href="/academic/apply" class="btn btn-primary">Nueva solicitud</a>
@@ -36,6 +37,7 @@
     <template id="portal_application_form" name="Formulario de solicitud académica">
         <t t-call="portal.portal_layout">
             <div class="container py-4 o_academic_portal">
+                <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Navegación académica"><a class="btn btn-outline-secondary btn-sm" href="/my/academic">Mi portal académico</a><a class="btn btn-outline-secondary btn-sm" href="/my/admissions">Registro / Primer ingreso</a><a class="btn btn-outline-secondary btn-sm" href="/web/session/logout?redirect=/web/login">Cerrar sesión</a></nav>
                 <h2>Nueva solicitud académica</h2>
                 <p class="text-muted">Completa todos los campos. Luego podrás adjuntar la documentación requerida antes de enviar la solicitud.</p>
                 <t t-if="error"><div class="alert alert-danger"><t t-out="error"/></div></t>
@@ -49,7 +51,7 @@
                         <div class="col-md-3"><label class="form-label">Fecha nacimiento *</label><input name="birth_date" type="date" class="form-control" required="required"/></div>
                         <div class="col-md-3"><label class="form-label">Teléfono *</label><input name="phone" class="form-control" required="required" t-att-value="partner.phone or partner.mobile or ''"/></div>
                         <div class="col-md-6"><label class="form-label">Correo *</label><input name="email" type="email" class="form-control" required="required" t-att-value="partner.email or ''"/></div>
-                        <div class="col-md-6"><label class="form-label">País *</label><select name="country_id" class="form-select" required="required"><option value="">Seleccione...</option><t t-foreach="countries" t-as="country"><option t-att-value="country.id" t-att-selected="partner.country_id.id == country.id"><t t-out="country.name"/></option></t></select></div>
+                        <div class="col-md-6"><label class="form-label">País *</label><select name="country_id" class="form-select" required="required"><option value="">Seleccione...</option><t t-foreach="countries" t-as="country"><option t-att-value="country.id" t-att-selected="default_country_id == country.id"><t t-out="country.name"/></option></t></select></div>
                         <div class="col-md-4"><label class="form-label">Provincia/Estado *</label><select name="state_id" class="form-select" required="required"><option value="">Seleccione...</option><t t-foreach="states" t-as="state"><option t-att-value="state.id" t-att-selected="partner.state_id.id == state.id"><t t-out="state.name"/> - <t t-out="state.country_id.code"/></option></t></select></div>
                         <div class="col-md-4"><label class="form-label">Cantón *</label><input name="canton" class="form-control" required="required" t-att-value="partner.academic_canton or ''"/></div>
                         <div class="col-md-4"><label class="form-label">Distrito *</label><input name="district" class="form-control" required="required" t-att-value="partner.academic_district or ''"/></div>
@@ -64,6 +66,7 @@
     <template id="portal_application_detail" name="Detalle de solicitud académica">
         <t t-call="portal.portal_layout">
             <div class="container py-4 o_academic_portal">
+                <nav class="d-flex flex-wrap gap-2 mb-3" aria-label="Navegación académica"><a class="btn btn-outline-secondary btn-sm" href="/my/academic">Mi portal académico</a><a class="btn btn-outline-secondary btn-sm" href="/my/admissions">Registro / Primer ingreso</a><a class="btn btn-outline-secondary btn-sm" href="/web/session/logout?redirect=/web/login">Cerrar sesión</a></nav>
                 <div class="d-flex justify-content-between align-items-start mb-3"><div><h2><t t-out="application.name"/></h2><p class="text-muted mb-0"><t t-out="application.offering_id.display_name"/></p></div><a href="/my/admissions" class="btn btn-outline-secondary">Volver</a></div>
                 <t t-if="error"><div class="alert alert-danger"><t t-out="error"/></div></t>
                 <t t-if="application.state == 'correction'"><div class="alert alert-warning"><strong>Correcciones requeridas:</strong> <t t-out="application.correction_note"/></div></t>

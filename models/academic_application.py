@@ -27,7 +27,7 @@ class AcademicApplication(models.Model):
     age = fields.Integer(compute="_compute_age", store=False)
     email = fields.Char(required=True, tracking=True)
     phone = fields.Char(required=True, tracking=True)
-    country_id = fields.Many2one("res.country", required=True, tracking=True)
+    country_id = fields.Many2one("res.country", required=True, tracking=True, default=lambda self: self.env.ref("base.cr", raise_if_not_found=False))
     state_id = fields.Many2one("res.country.state", required=True, tracking=True, domain="[('country_id', '=', country_id)]")
     canton = fields.Char(required=True, tracking=True)
     district = fields.Char(required=True, tracking=True)
@@ -71,6 +71,14 @@ class AcademicApplication(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        from odoo.exceptions import AccessError
+
+        for vals in vals_list:
+            if vals.get("state", "draft") != "draft":
+                raise AccessError(
+                    "Las solicitudes académicas deben crearse en borrador."
+                )
+
         for vals in vals_list:
             if vals.get("name", _("New")) == _("New"):
                 vals["name"] = self.env["ir.sequence"].next_by_code("academic.application") or _("New")
@@ -187,7 +195,137 @@ class AcademicApplication(models.Model):
             rec.crm_lead_id = lead.id
             rec._log_event("crm_created", _("CRM opportunity created: %s") % lead.display_name)
 
+    # ACADEMIC360_STATE_WRITE_SECURITY
+    def write(self, vals):
+        from odoo.exceptions import AccessError, UserError
+
+        if "state" in vals:
+            target = vals["state"]
+            user = self.env.user
+
+            is_admissions = user.has_group(
+                "academic_admission_enrollment.group_academic_admissions"
+            )
+            is_direction = user.has_group(
+                "academic_admission_enrollment.group_academic_direction"
+            )
+            is_manager = user.has_group(
+                "academic_admission_enrollment.group_academic_manager"
+            )
+
+            allowed = {
+                "submitted": (("draft", "correction"), "submit"),
+                "auto_review": (("draft", "correction"), "submit"),
+                "admin_review": (
+                    ("draft", "correction", "auto_review", "submitted"),
+                    "submit",
+                ),
+                "academic_review": (("admin_review",), "admissions"),
+                "correction": (
+                    ("auto_review", "admin_review", "academic_review"),
+                    "admissions",
+                ),
+                "approved": (("academic_review",), "direction"),
+                "rejected": (
+                    ("admin_review", "academic_review"),
+                    "direction",
+                ),
+                "cancelled": (
+                    (
+                        "draft", "submitted", "auto_review",
+                        "admin_review", "academic_review",
+                        "correction", "approved", "rejected",
+                    ),
+                    "manager",
+                ),
+                "enrolled": (("approved",), "admissions"),
+                "draft": (("correction", "rejected", "cancelled"), "manager"),
+            }
+
+            if target not in allowed:
+                raise UserError("Transición académica no permitida.")
+
+            origins, permission = allowed[target]
+
+            for rec in self:
+                is_owner = (
+                    not user._is_public()
+                    and rec.partner_id.id == user.partner_id.id
+                )
+
+                permissions = {
+                    "submit": is_admissions or is_owner,
+                    "admissions": is_admissions,
+                    "direction": is_direction,
+                    "manager": is_manager,
+                }
+
+                if not permissions[permission]:
+                    raise AccessError(
+                        "No tiene permisos para cambiar el estado académico."
+                    )
+
+                if rec.state not in origins:
+                    raise UserError(
+                        "Transición académica inválida: %s → %s"
+                        % (rec.state, target)
+                    )
+
+                if target == "approved":
+                    rec._ensure_required_documents()
+                    rec._ensure_required_documents_approved()
+                    rec._ensure_guarantor()
+
+                if target == "enrolled":
+                    if not rec.student_id or not (
+                        vals.get("enrollment_id") or rec.enrollment_id
+                    ):
+                        raise UserError(
+                            "Debe existir un estudiante y una matrícula antes de marcar la solicitud como matriculada."
+                        )
+
+                    rec.offering_id.check_capacity_for_enrollment()
+
+                if target == "rejected" and not (
+                    vals.get("rejection_reason") or rec.rejection_reason
+                ):
+                    raise UserError(
+                        "Debe indicar el motivo de rechazo."
+                    )
+
+                if target == "correction" and not (
+                    vals.get("correction_note") or rec.correction_note
+                ):
+                    raise UserError(
+                        "Debe indicar las correcciones solicitadas."
+                    )
+
+        return super().write(vals)
+
     def action_submit(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+
+        _academic_is_admissions = self.env.user.has_group(
+            "academic_admission_enrollment.group_academic_admissions"
+        )
+
+        for _academic_rec in self:
+            _academic_is_owner = (
+                not self.env.user._is_public()
+                and _academic_rec.partner_id.id == self.env.user.partner_id.id
+            )
+
+            if not (_academic_is_admissions or _academic_is_owner):
+                raise AccessError(
+                    "No tiene permisos para enviar esta solicitud académica."
+                )
+
+            if _academic_rec.state not in ("draft", "correction"):
+                raise UserError(
+                    "La solicitud no se encuentra en un estado válido para esta acción."
+                )
+
         for rec in self:
             if rec.state not in ("draft", "correction"):
                 continue
@@ -206,10 +344,26 @@ class AcademicApplication(models.Model):
         return True
 
     def action_send_admin_review(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+        if not self.env.user.has_group('academic_admission_enrollment.group_academic_admissions'):
+            raise AccessError('No tiene permisos para ejecutar esta acción académica.')
+        for _academic_rec in self:
+            if _academic_rec.state not in ('auto_review', 'submitted'):
+                raise UserError('La solicitud no se encuentra en un estado válido para esta acción.')
+
         self.write({"state": "admin_review"})
         self._log_event("admin_review", _("Sent to administrative review"))
 
     def action_send_academic_review(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+        if not self.env.user.has_group('academic_admission_enrollment.group_academic_admissions'):
+            raise AccessError('No tiene permisos para ejecutar esta acción académica.')
+        for _academic_rec in self:
+            if _academic_rec.state not in ('admin_review',):
+                raise UserError('La solicitud no se encuentra en un estado válido para esta acción.')
+
         self._ensure_required_documents()
         self._ensure_required_documents_approved()
         if self.filtered(lambda r: r.invalid_documents):
@@ -218,6 +372,14 @@ class AcademicApplication(models.Model):
         self._log_event("academic_review", _("Sent to academic review"))
 
     def action_request_correction(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+        if not self.env.user.has_group('academic_admission_enrollment.group_academic_admissions'):
+            raise AccessError('No tiene permisos para ejecutar esta acción académica.')
+        for _academic_rec in self:
+            if _academic_rec.state not in ('auto_review', 'admin_review', 'academic_review'):
+                raise UserError('La solicitud no se encuentra en un estado válido para esta acción.')
+
         for rec in self:
             if not rec.correction_note:
                 raise ValidationError(_("Enter a correction note before requesting corrections."))
@@ -226,6 +388,14 @@ class AcademicApplication(models.Model):
         self._send_template("academic_admission_enrollment.mail_template_application_correction")
 
     def action_approve(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+        if not self.env.user.has_group('academic_admission_enrollment.group_academic_direction'):
+            raise AccessError('No tiene permisos para ejecutar esta acción académica.')
+        for _academic_rec in self:
+            if _academic_rec.state not in ('academic_review',):
+                raise UserError('La solicitud no se encuentra en un estado válido para esta acción.')
+
         self._ensure_required_documents()
         self._ensure_required_documents_approved()
         self._ensure_guarantor()
@@ -239,6 +409,14 @@ class AcademicApplication(models.Model):
         return True
 
     def action_reject(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+        if not self.env.user.has_group('academic_admission_enrollment.group_academic_direction'):
+            raise AccessError('No tiene permisos para ejecutar esta acción académica.')
+        for _academic_rec in self:
+            if _academic_rec.state not in ('admin_review', 'academic_review'):
+                raise UserError('La solicitud no se encuentra en un estado válido para esta acción.')
+
         for rec in self:
             if not rec.rejection_reason:
                 raise ValidationError(_("Enter a rejection reason."))
@@ -248,10 +426,27 @@ class AcademicApplication(models.Model):
         return True
 
     def action_cancel(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+        if not self.env.user.has_group('academic_admission_enrollment.group_academic_manager'):
+            raise AccessError('No tiene permisos para ejecutar esta acción académica.')
+        for _academic_rec in self:
+            if _academic_rec.state not in ('draft', 'submitted', 'auto_review', 'admin_review', 'academic_review', 'correction', 'approved', 'rejected'):
+                raise UserError('La solicitud no se encuentra en un estado válido para esta acción.')
+
         self.write({"state": "cancelled"})
         self._log_event("cancelled", _("Application cancelled"))
 
     def action_reset_draft(self):
+        from odoo.exceptions import AccessError
+
+        if not self.env.user.has_group(
+            "academic_admission_enrollment.group_academic_manager"
+        ):
+            raise AccessError(
+                "Solo un administrador académico puede reiniciar solicitudes."
+            )
+
         self.write({"state": "draft"})
         self._log_event("reset", _("Application reset to draft"))
 
@@ -267,6 +462,14 @@ class AcademicApplication(models.Model):
         return True
 
     def action_enroll(self):
+        # ACADEMIC360_SECURITY_GUARD
+        from odoo.exceptions import AccessError, UserError
+        if not self.env.user.has_group('academic_admission_enrollment.group_academic_admissions'):
+            raise AccessError('No tiene permisos para ejecutar esta acción académica.')
+        for _academic_rec in self:
+            if _academic_rec.state not in ('approved',):
+                raise UserError('La solicitud no se encuentra en un estado válido para esta acción.')
+
         Enrollment = self.env["academic.enrollment"]
         for rec in self:
             if rec.state != "approved":
